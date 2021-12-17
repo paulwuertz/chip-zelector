@@ -6,7 +6,7 @@ dts_path = "dts_temp/"
 
 interesting_props = [
     "timer", "gpio", "memory", "cpu", "rtc", "i2c", "spi", "uart",
-    "usart", "adc", "dac", "pwm", "usb", "ethernet", "sdmmc"
+    "usart", "adc", "dac", "pwm", "usb", "ethernet", "sdmmc", "cpus",
     "flash", "can", "timers", "serial", "wdg", "quadspi"
 ]
 board_interesting_feature_map = {}
@@ -30,16 +30,19 @@ for board in boards:
 #
 json_board_props = {}
 for board_name, dt_preselect_props in board_interesting_feature_map.items():
-    json_board_prop = {}
+    json_board_prop = {
+        "cpus": {"cores_count": len(dt.get_node("/cpus").nodes)}
+    }
 
     if "flash" in dt_preselect_props:
         json_board_prop["flash"] = [{
-            "size": f.props["reg"].to_nums()[1]
+            "label": f.props["label"].to_string() if "label" in f.props else "_".join(f.labels),
+            "size": f.props["reg"].to_nums()[1] if len(f.props["reg"].to_nums())==2 else f.props["size"].to_num()
         } for f in dt_preselect_props["flash"]]
 
     if "memory" in dt_preselect_props:
         json_board_prop["memory"] = [{
-            "label": f.props["label"].to_string() if "label" in f.props else "NO_LABEL",
+            "label": f.props["label"].to_string() if "label" in f.props else "_".join(f.labels),
             "size": f.props["reg"].to_nums()[1]
         } for f in dt_preselect_props["memory"]]
 
@@ -52,6 +55,7 @@ for board_name, dt_preselect_props in board_interesting_feature_map.items():
         "gpio", "i2c", "spi", "uart", "can", "serial", "quadspi",
         "usart", "adc", "dac", "pwm", "usb", "ethernet"
     ]:
+        #if periph not in dt_preselect_props or not dt_preselect_props[periph]: continue
         json_board_prop[periph] = [{
             "label": f.props["label"].to_string() if "label" in f.props else "NO_LABEL"
         } for f in dt_preselect_props[periph]]
