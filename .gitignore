@@ -1,2 +1,3 @@
-dts_temp
+dts_temp/
 build/
+device_json_temp/

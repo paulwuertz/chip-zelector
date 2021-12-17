@@ -46,7 +46,6 @@ for board_name, dt_preselect_props in board_interesting_feature_map.items():
             "size": f.props["reg"].to_nums()[1]
         } for f in dt_preselect_props["memory"]]
 
-    #"cpu"  TODO
     #"rtc"  TODO
     #"timers", "timer", "rtc", "wdg" TODO
 
@@ -62,4 +61,10 @@ for board_name, dt_preselect_props in board_interesting_feature_map.items():
 
     json_board_props[board_name] = json_board_prop
 
-print(json.dumps(json_board_prop, indent=4, ensure_ascii=False))
+#
+# Output to json
+#
+if os.path.isfile("device_json_temp"):
+    os.mkdir("device_json_temp")
+open("device_json_temp/devices.json", "w").write(json.dumps(json_board_prop, indent=4, ensure_ascii=False))
+open("device_json_temp/devices.min.json", "w").write(json.dumps(json_board_prop, ensure_ascii=False))
