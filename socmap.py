@@ -28,7 +28,7 @@ for board in boards:
 #
 # Features dt to simpler json
 #
-json_board_props = {}
+json_board_props = []
 for board_name, dt_preselect_props in board_interesting_feature_map.items():
     json_board_prop = {
         "cpus": {"cores_count": len(dt.get_node("/cpus").nodes)}
@@ -39,12 +39,18 @@ for board_name, dt_preselect_props in board_interesting_feature_map.items():
             "label": f.props["label"].to_string() if "label" in f.props else "_".join(f.labels),
             "size": f.props["reg"].to_nums()[1] if len(f.props["reg"].to_nums())==2 else f.props["size"].to_num()
         } for f in dt_preselect_props["flash"]]
+        json_board_prop["main_flash_size"] = max([0] + [f["size"] for f in json_board_prop["flash"]])
+    else:
+        json_board_prop["main_flash_size"] = 0
 
     if "memory" in dt_preselect_props:
         json_board_prop["memory"] = [{
             "label": f.props["label"].to_string() if "label" in f.props else "_".join(f.labels),
             "size": f.props["reg"].to_nums()[1]
         } for f in dt_preselect_props["memory"]]
+        json_board_prop["main_ram_size"] = max([0] + [f["size"] for f in json_board_prop["memory"]])
+    else:
+        json_board_prop["main_ram_size"] = 0
 
     #"rtc"  TODO
     #"timers", "timer", "rtc", "wdg" TODO
@@ -55,16 +61,20 @@ for board_name, dt_preselect_props in board_interesting_feature_map.items():
         "usart", "adc", "dac", "pwm", "usb", "ethernet"
     ]:
         #if periph not in dt_preselect_props or not dt_preselect_props[periph]: continue
-        json_board_prop[periph] = [{
-            "label": f.props["label"].to_string() if "label" in f.props else "NO_LABEL"
-        } for f in dt_preselect_props[periph]]
+        json_board_prop[periph] = {
+            "count": len(dt_preselect_props[periph]),
+            "instances":[{
+                "label": f.props["label"].to_string() if "label" in f.props else "NO_LABEL"
+            } for f in dt_preselect_props[periph]]
+        }
 
-    json_board_props[board_name] = json_board_prop
+    json_board_prop["name"] = board_name
+    json_board_props += [json_board_prop]
 
 #
 # Output to json
 #
 if os.path.isfile("device_json_temp"):
     os.mkdir("device_json_temp")
-open("device_json_temp/devices.json", "w").write(json.dumps(json_board_prop, indent=4, ensure_ascii=False))
-open("device_json_temp/devices.min.json", "w").write(json.dumps(json_board_prop, ensure_ascii=False))
+open("device_json_temp/devices.json", "w").write(json.dumps(json_board_props, indent=4, ensure_ascii=False))
+open("device_json_temp/devices.min.json", "w").write(json.dumps(json_board_props, ensure_ascii=False))
