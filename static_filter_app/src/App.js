@@ -33,40 +33,13 @@ const DataTableFilterDemo = () => {
         'can': { value: null, matchMode: FilterMatchMode.BETWEEN },
         'ethernet': { value: null, matchMode: FilterMatchMode.BETWEEN },
     });
-    const [globalFilterValue2, setGlobalFilterValue2] = useState('');
-    const [loading2, setLoading2] = useState(true);
+    const [loading2, setLoading2] = useState(false);
 
-    // const customerService = new CustomerService();
     useEffect(() => {
-        // customerService.getCustomersLarge().then(data => { setCustomers1(getCustomers(data)); setLoading1(false) });
-        // customerService.getCustomersLarge().then(data => { setCustomers2(getCustomers(data)); setLoading2(false) });
         setCustomers2(devices);
-        setLoading2(false)
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-
-    const onGlobalFilterChange2 = (e) => {
-        const value = e.target.value;
-        let _filters2 = { ...filters2 };
-        _filters2['global'].value = value;
-
-        setFilters2(_filters2);
-        setGlobalFilterValue2(value);
-    }
-
-    const renderHeader2 = () => {
-        return (
-            <div className="p-d-flex p-jc-end">
-                <span className="p-input-icon-left">
-                    <i className="pi pi-search" />
-                    <InputText value={globalFilterValue2} onChange={onGlobalFilterChange2} placeholder="Keyword Search" />
-                </span>
-            </div>
-        )
-    }
-
-
-
+    // TODO tristate-checkbox with randomnumber generator and crypto?
     // const verifiedBodyTemplate = (rowData) => {
     //     return <i className={classNames('pi', {'true-icon pi-check-circle': rowData.verified, 'false-icon pi-times-circle': !rowData.verified})}></i>;
     // }
@@ -74,40 +47,88 @@ const DataTableFilterDemo = () => {
     //     return <TriStateCheckbox value={options.value} onChange={(e) => options.filterApplyCallback(e.value)} />
     // }
 
-    const activityFilterTemplate = (options) => {
+    const periphFilterTemplate = (options) => {
         return (
             <React.Fragment>
                 <Slider value={options.value} onChange={(e) => options.filterCallback(e.value)} range className="p-m-3"></Slider>
                 <div className="p-d-flex p-ai-center p-jc-between p-px-2">
                     <span>{options.value ? options.value[0] : 0}</span>
-                    <span>{options.value ? options.value[1] : 100}</span>
+                    <span>{options.value ? options.value[1] : 15}</span>
                 </div>
             </React.Fragment>
         )
     }
 
-    const header2 = renderHeader2();
+    const ethFilterTemplate = (options) => {
+        return (
+            <React.Fragment>
+                <Slider value={options.value} onChange={(e) => options.filterCallback(e.value)} range className="p-m-3"></Slider>
+                <div className="p-d-flex p-ai-center p-jc-between p-px-2">
+                    <span>{options.value ? options.value[0] : 0}</span>
+                    <span>{options.value ? options.value[1] : 2}</span>
+                </div>
+            </React.Fragment>
+        )
+    }
+
+    const flashFilterTemplate = (options) => {
+        return (
+            <React.Fragment>
+                <Slider value={options.value} onChange={(e) => options.filterCallback(e.value)} range className="p-m-3"></Slider>
+                <div className="p-d-flex p-ai-center p-jc-between p-px-2">
+                    <span>{options.value ? options.value[0] : 0}</span>
+                    <span>{options.value ? options.value[1] : 131072}</span>
+                </div>
+            </React.Fragment>
+        )
+    }
+
+    const ramFilterTemplate = (options) => {
+        return (
+            <React.Fragment>
+                <Slider value={options.value} onChange={(e) => options.filterCallback(e.value)} range className="p-m-3"></Slider>
+                <div className="p-d-flex p-ai-center p-jc-between p-px-2">
+                    <span>{options.value ? options.value[0] : 0}</span>
+                    <span>{options.value ? options.value[1] : 2097152}</span>
+                </div>
+            </React.Fragment>
+        )
+    }
 
     return (
+
+        <div className="layout-main-container">
+        <div className="layout-main">
         <div className="datatable-filter-demo">
             <div className="card">
-                <h5>Filter Row</h5>
-                <p>Filters are displayed inline within a separate row.</p>
-                <DataTable value={customers2} paginator className="p-datatable-customers" rows={10} sortField="name" dataKey="name" filters={filters2} filterDisplay="menu" responsiveLayout="scroll" header={header2} emptyMessage="No matching boards found.">
+                <DataTable value={customers2} paginator className="p-datatable-customers" rows={10} sortField="name" dataKey="name" filters={filters2}
+                 filterDisplay="menu" responsiveLayout="scroll" emptyMessage="No matching boards found.">
                     <Column field="name" header="Name" filter filterPlaceholder="Search by name" sortable style={{ minWidth: '6rem' }} />
-                    <Column field="cpus.cores_count" header="CPUs" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.cpus.cores_count}</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="main_flash_size" header="Flash" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.main_flash_size/1024} KB</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="main_ram_size" header="RAM" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.main_ram_size/1024} KB</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="gpio.count" header="GPIO Banks" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.gpio.count}</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="uart.count" header="UART" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.uart.count}</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="usart.count" header="USART" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.usart.count}</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="i2c.count" header="I2C" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.i2c.count}</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="spi.count" header="SPI" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.spi.count}</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="can.count" header="CAN" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.can.count}</span>;}} filter filterElement={activityFilterTemplate} />
-                    <Column field="ethernet.count" header="Ethernet" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }} body={(rowData) => {return <span>{rowData.ethernet.count}</span>;}} filter filterElement={activityFilterTemplate} />
+                    <Column field="cpus.cores_count" header="CPUs"   showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.cpus.cores_count}</span>;}} filter filterElement={flashFilterTemplate} />
+                    <Column field="main_flash_size" header="Flash"   showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.main_flash_size/1024} KB</span>;}} filter filterElement={ramFilterTemplate} />
+                    <Column field="main_ram_size" header="RAM"       showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.main_ram_size/1024} KB</span>;}} filter filterElement={periphFilterTemplate} />
+                    <Column field="gpio.count" header="GPIO Banks"   showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.gpio.count}</span>;}} filter filterElement={periphFilterTemplate} />
+                    <Column field="uart.count" header="UART"         showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.uart.count}</span>;}} filter filterElement={periphFilterTemplate} />
+                    <Column field="usart.count" header="USART"       showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.usart.count}</span>;}} filter filterElement={periphFilterTemplate} />
+                    <Column field="i2c.count" header="I2C"           showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.i2c.count}</span>;}} filter filterElement={periphFilterTemplate} />
+                    <Column field="spi.count" header="SPI"           showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.spi.count}</span>;}} filter filterElement={periphFilterTemplate} />
+                    <Column field="can.count" header="CAN"           showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.can.count}</span>;}} filter filterElement={periphFilterTemplate} />
+                    <Column field="ethernet.count" header="Ethernet" showFilterMatchModes={false} sortable style={{ minWidth: '2rem' }}
+                        body={(rowData) => {return <span>{rowData.ethernet.count}</span>;}} filter filterElement={ethFilterTemplate} />
                     {/* <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} body={verifiedBodyTemplate} filter filterElement={verifiedRowFilterTemplate} /> */}
                 </DataTable>
             </div>
+        </div>
+        </div>
         </div>
     );
 }
