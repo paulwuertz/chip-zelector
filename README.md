@@ -24,13 +24,14 @@ WIP - A tool supposed to select chips supported by zephyr by features.
 * [ ] export to sqlite or indexedDB
 * [x] display + filter in simple react dummy
     * [x] list of controllers
+    * [ ] add filterable/sortable architecture to each chip
     * [ ] add controllers images
     * [ ] list of controllers
     * [ ] detailed view of all controller features
     * [ ] export min-max of peripeherals & memory from real devices/boards
     * [ ] link boards to docs.zephyrproject (maybe add board page as routed sub-page)
 * [ ] brainstorm about handy features
-    * [ ] add option to add sensors to peripheral bus
-    * [ ] generate overlay with selected features on controller page
     * [ ] displaying pins and check for possible assignment of selected peripherals
+    * [ ] generate overlay with selected features on controller page
+    * [ ] add option to add sensors to peripheral bus
     * [ ] ...
