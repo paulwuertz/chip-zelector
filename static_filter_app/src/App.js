@@ -9,6 +9,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { MultiSelect } from 'primereact/multiselect';
 import { Slider } from 'primereact/slider';
 import { TriStateCheckbox } from 'primereact/tristatecheckbox';
+import parse from 'html-react-parser'
 import devices from "./devices.min.json"
 // import { CustomerService } from '../service/CustomerService';
 
@@ -56,6 +57,7 @@ const DataTableFilterDemo = () => {
     ];
 
     const [selectedColumns, setSelectedColumns] = useState(columns);
+    const [expandedRows, setExpandedRows] = useState(null);
     const arches = [
         "arc", "arm", "arm64", "nios2", "posix", "riscv", "sparc", "x86", "xtensa"
     ]
@@ -114,6 +116,16 @@ const DataTableFilterDemo = () => {
         />;
     });
 
+    const rowExpansionTemplate = (data) => {
+        let doc = data.docu_html
+        let doc_img_path_fixed = doc.replace("../../../../_images/", '');
+        return (
+            <>
+                {parse(doc_img_path_fixed)}
+            </>
+        );
+    }
+
     return (
         <div className="datatable-doc-demo">
         <div className="card">
@@ -121,7 +133,10 @@ const DataTableFilterDemo = () => {
             <div className="card">
                 <DataTable value={devices} paginator className="p-datatable-customers" rows={15} header={header} sortField="name" dataKey="name" filters={filters2} rowsPerPageOptions={[10,15,20]}
                  filterDisplay="menu" responsiveLayout="scroll" emptyMessage="No matching boards found." currentPageReportTemplate="Showing {first} to {last} of {totalRecords} devices complying to your specifications"
-                 paginatorTemplate='RowsPerPageDropdown PrevPageLink PageLinks NextPageLink CurrentPageReport'>
+                 paginatorTemplate='RowsPerPageDropdown PrevPageLink PageLinks NextPageLink CurrentPageReport'
+                 expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)} /*onRowExpand={onRowExpand} onRowCollapse={onRowCollapse}*/ rowExpansionTemplate={rowExpansionTemplate}
+                >
+                    <Column expander style={{ width: '1em' }} />
                     <Column field="name" header="Name" filter filterPlaceholder="Search by name" sortable style={{ minWidth: '6rem' }} />
                     <Column field="arch" header="Arch" filter showFilterMatchModes={false} filterElement={archFilterTemplate} filterPlaceholder="Search by arch" sortable style={{ minWidth: '2rem' }} />
                     {columnComponents}
