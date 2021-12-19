@@ -1,5 +1,8 @@
 import os, json
+from bs4 import BeautifulSoup
+from rst2html5 import HTML5Writer
 from devicetree import edtlib, dtlib
+from docutils.core import publish_parts
 
 # Get a list of all dts-board files
 dts_path = "dts_temp/"
@@ -17,16 +20,35 @@ arches = ["arc", "arm", "arm64", "nios2", "posix", "riscv", "sparc", "x86", "xte
 def get_arch_and_docu_map():
     """traverse the boards dir and generate a board to arch+docu map"""
     devices = {d:{"arch": None, "docu_html": ""} for d in open("device_list.txt", "r").read().split("\n")}
+    # map the architecture
     for arch in arches:
         # get the arch
         for board in os.listdir("../../boards/"+arch):
             if board not in devices: continue
             devices[board]["arch"] = arch
+    #map the board doc
+    for arch in arches:
+        # get the arch
+        for board in os.listdir("../../doc/_build/html/boards/"+arch):
+            if board not in devices: continue
+            doc_file = "../../doc/_build/html/boards/"+arch+"/"+board+"/doc/index.html"
+            try:
+                html_doc = open(doc_file).read()
+                soup = BeautifulSoup(html_doc, 'lxml')
+                find_by_class = soup.find_all(class_="rst-content")
+                if len(find_by_class) > 0:
+                    devices[board]["docu_html"] = str(find_by_class[0])
+                    #print(str(find_by_class[0]))
+                else:
+                    print("no rst content", find_by_class)
+            except Exception as e:
+                print("bad rst content", e)
+                devices[board]["docu_html"] = "Error generating the docs"
             print(arch, board, board in devices)
     return devices
 
-#get_arch_and_docu_map()
-#exit()
+# get_arch_and_docu_map()
+# exit()
 #
 # Extract some features as dt tree
 #
@@ -43,6 +65,7 @@ for board in boards:
 #
 # Features dt to simpler json
 #
+arch_doc_map = get_arch_and_docu_map()
 for board_name, dt_preselect_props in board_interesting_feature_map.items():
     json_board_prop = {
         "cpus": {"cores_count": len(dt.get_node("/cpus").nodes)}
@@ -81,9 +104,9 @@ for board_name, dt_preselect_props in board_interesting_feature_map.items():
                 "label": f.props["label"].to_string() if "label" in f.props else "NO_LABEL"
             } for f in dt_preselect_props[periph]]
         }
-    arch_doc_map = get_arch_and_docu_map()
     json_board_prop["name"] = board_name
     json_board_prop["arch"] = arch_doc_map[board_name]["arch"]
+    json_board_prop["docu_html"] = arch_doc_map[board_name]["docu_html"]
     json_board_props += [json_board_prop]
 
 #
