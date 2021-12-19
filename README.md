@@ -26,6 +26,8 @@ WIP - A tool supposed to select chips supported by zephyr by features.
     * [x] list of controllers
     * [ ] add filterable/sortable architecture to each chip
     * [ ] add controllers images
+    * [ ] show applied filters as chips (like on mouser.com)
+    * [ ] add column filter (which cols to hide to make the table fit a normal screen)
     * [ ] list of controllers
     * [ ] detailed view of all controller features
     * [ ] export min-max of peripeherals & memory from real devices/boards
