@@ -19,6 +19,7 @@ import 'primeicons/primeicons.css';
 const DataTableFilterDemo = () => {
     const [filters2, setFilters2] = useState({
         'name': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }]  },
+        'arch': { value: null, matchMode: FilterMatchMode.EQUALS },
         'cpus.cores_count': { value: null, matchMode: FilterMatchMode.BETWEEN},
         'main_flash_size': { value: null, matchMode: FilterMatchMode.BETWEEN},
         'main_ram_size': { value: null, matchMode: FilterMatchMode.BETWEEN},
@@ -53,7 +54,11 @@ const DataTableFilterDemo = () => {
         {field:"usb.count", header:"USB",          range: [0,2], showFilterMatchModes:false, sortable: true, cellFn: (rowData) => {return <>{rowData.usb.count}</>;}},
         {field:"ethernet.count", header:"Ethernet",range: [0,2], showFilterMatchModes:false, sortable: true, cellFn: (rowData) => {return <>{rowData.ethernet.count}</>;}},
     ];
+
     const [selectedColumns, setSelectedColumns] = useState(columns);
+    const arches = [
+        "arc", "arm", "arm64", "nios2", "posix", "riscv", "sparc", "x86", "xtensa"
+    ]
 
     useEffect(() => {
         // setCustomers2(devices);
@@ -66,6 +71,13 @@ const DataTableFilterDemo = () => {
     // const verifiedRowFilterTemplate = (options) => {
     //     return <TriStateCheckbox value={options.value} onChange={(e) => options.filterApplyCallback(e.value)} />
     // }
+
+    const archFilterTemplate = (options) => {
+        return <
+            Dropdown value={options.value} options={arches} onChange={(e) => options.filterCallback(e.value, options.index)}
+            placeholder="Select an arch" className="p-column-filter" showClear
+        />;
+    }
 
     const onColumnToggle = (event) => {
         let selectedColumns = event.value;
@@ -111,6 +123,7 @@ const DataTableFilterDemo = () => {
                  filterDisplay="menu" responsiveLayout="scroll" emptyMessage="No matching boards found." currentPageReportTemplate="Showing {first} to {last} of {totalRecords} devices complying to your specifications"
                  paginatorTemplate='RowsPerPageDropdown PrevPageLink PageLinks NextPageLink CurrentPageReport'>
                     <Column field="name" header="Name" filter filterPlaceholder="Search by name" sortable style={{ minWidth: '6rem' }} />
+                    <Column field="arch" header="Arch" filter showFilterMatchModes={false} filterElement={archFilterTemplate} filterPlaceholder="Search by arch" sortable style={{ minWidth: '2rem' }} />
                     {columnComponents}
                     {/*  <Column field="verified" header="Verified" dataType="boolean" style={{ minWidth: '6rem' }} body={verifiedBodyTemplate} filter filterElement={verifiedRowFilterTemplate} /> */}
                 </DataTable>
