@@ -7,3 +7,4 @@ while IFS= read -r line; do
 done < device_list.txt
 
 rm dts_temp/qemu_*
+rm dts_temp/xt-sim*

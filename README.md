@@ -30,6 +30,8 @@ WIP - A tool supposed to select chips supported by zephyr by features.
     * [x] add filterable/sortable architecture to each chip
     * [x] detailed view of all controller features from zephyr-docs board doc
     * [x] add controllers images
+    * [ ] fix CPU count in device tree extraction
+    * [ ] add MHz as range to each chip
     * [ ] add URL encoded filter state to send pre-selected parts via messges to sbd.
     * [ ] show applied filters as chips (like on mouser.com)
     * [ ] add column filter (which cols to hide to make the table fit a normal screen)
